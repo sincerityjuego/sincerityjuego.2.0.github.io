@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GEOVISION - Advanced Geospatial Analysis Platform</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo-container">
+            <div class="logo">
+                <span class="logo-text">GEOVISION</span>
+                <div class="logo-eye">
+                    <div class="eye-outer"></div>
+                    <div class="eye-inner"></div>
+                </div>
+            </div>
+        </div>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Search location..." />
+            <button id="searchBtn"><i class="fas fa-search"></i></button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Map Section -->
+        <div class="map-section">
+            <div id="map"></div>
+            
+            <!-- Map Controls -->
+            <div class="map-controls">
+                <button id="toggle3D" class="control-btn">
+                    <i class="fas fa-cube"></i> 3D
+                </button>
+                <button id="toggleSatellite" class="control-btn">
+                    <i class="fas fa-satellite"></i> Satellite
+                </button>
+                <button id="toggleHazards" class="control-btn">
+                    <i class="fas fa-exclamation-triangle"></i> Hazards
+                </button>
+                <button id="toggleWeather" class="control-btn">
+                    <i class="fas fa-cloud-sun"></i> Weather
+                </button>
+            </div>
+
+            <!-- Hazard Legend -->
+            <div class="hazard-legend" id="hazardLegend" style="display: none;">
+                <h4>Hazard Levels</h4>
+                <div class="legend-item">
+                    <span class="legend-color dangerous"></span>
+                    <span>High Risk</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color moderate"></span>
+                    <span>Moderate</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color good"></span>
+                    <span>Low Risk</span>
+                </div>
+            </div>
+
+            <!-- Enable Overlay Control -->
+            <div class="overlay-control">
+                <label>
+                    <input type="checkbox" id="enableOverlay" />
+                    <span>Enable</span>
+                </label>
+                <div class="status-indicators">
+                    <span class="status-dot dangerous"></span>
+                    <span class="status-dot moderate"></span>
+                    <span class="status-dot good"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <!-- Location Info Panel -->
+            <div class="info-panel" id="infoPanel">
+                <div class="panel-header">
+                    <h3><i class="fas fa-map-marker-alt"></i> Location Details</h3>
+                    <button class="close-btn" id="closeInfo"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="panel-content" id="infoPanelContent">
+                    <p class="placeholder-text">Click on the map to view location information</p>
+                </div>
+            </div>
+
+            <!-- AI Vision Chat -->
+            <div class="ai-panel" id="aiPanel">
+                <div class="panel-header">
+                    <h3><i class="fas fa-brain"></i> AI VISION</h3>
+                    <div class="header-actions">
+                        <button class="fullscreen-btn" id="aiFullscreen" title="Fullscreen">
+                            <i class="fas fa-expand"></i>
+                        </button>
+                        <button class="minimize-btn" id="minimizeAI" title="Minimize">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message ai-message">
+                        <div class="message-avatar">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="message-content">
+                            Hi, I am AI VISION. What would you like to know?
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-input-container">
+                    <button class="attach-btn" id="attachImage" title="Attach image">
+                        <i class="fas fa-image"></i>
+                    </button>
+                    <input type="file" id="imageInput" accept="image/*" style="display: none;" />
+                    <input type="text" id="chatInput" placeholder="Ask..." />
+                    <button class="send-btn" id="sendBtn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Volcano/Earthquake Data Panel -->
+            <div class="disaster-panel" id="disasterPanel">
+                <div class="panel-header">
+                    <h3><i class="fas fa-volcano"></i> Disaster Monitoring</h3>
+                    <button class="close-btn" id="closeDisaster"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="panel-content" id="disasterContent">
+                    <div class="disaster-tabs">
+                        <button class="tab-btn active" data-tab="volcanoes">
+                            <i class="fas fa-mountain"></i> Volcanoes
+                        </button>
+                        <button class="tab-btn" data-tab="earthquakes">
+                            <i class="fas fa-wave-square"></i> Earthquakes
+                        </button>
+                    </div>
+                    <div class="disaster-data" id="disasterData">
+                        <p class="placeholder-text">Loading disaster data...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Fullscreen Modal -->
+    <div class="ai-fullscreen-modal" id="aiFullscreenModal">
+        <div class="fullscreen-header">
+            <h2><i class="fas fa-brain"></i> AI VISION</h2>
+            <button class="close-fullscreen-btn" id="closeFullscreen">
+                <i class="fas fa-compress"></i> Exit Fullscreen
+            </button>
+        </div>
+        <div class="fullscreen-chat-messages" id="fullscreenChatMessages"></div>
+        <div class="fullscreen-chat-input">
+            <button class="attach-btn" id="attachImageFullscreen">
+                <i class="fas fa-image"></i>
+            </button>
+            <input type="file" id="imageInputFullscreen" accept="image/*" style="display: none;" />
+            <input type="text" id="chatInputFullscreen" placeholder="Ask AI VISION anything..." />
+            <button class="send-btn" id="sendBtnFullscreen">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+        <div class="spinner"></div>
+        <p>Analyzing location data...</p>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
